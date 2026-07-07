@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serafino_Filippo_portfolio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/ian4oyh.css">
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.5.35/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue-router@5.1.0/dist/vue-router.global.prod.js"></script>
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #000 url('./pixel art.webp') center/cover no-repeat fixed; }
+
+    /* ══ LOGIN ══ */
+    .login-page {
+      position: fixed; inset: 0;
+      background: url('./desktop%20login.webp') center / cover no-repeat;
+    }
+    .login-center {
+      position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex; flex-direction: column; align-items: center;
+      gap: clamp(20px, 4vh, 56px);
+    }
+    .avatar-wrap {
+      overflow: hidden; border: 2px solid #000;
+      box-shadow: 0 4px 4px rgba(0,0,0,.5);
+    }
+    .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; display: block; }
+    .login-btn {
+      background: url('./login.png') 50% / 100% 100% no-repeat;
+      image-rendering: pixelated;
+      color: #FFF3F3; font-family: 'Lato', sans-serif;
+      text-align: center; -webkit-text-stroke-color: #1a0050;
+      border: none; cursor: pointer; transition: filter .18s;
+      touch-action: manipulation; display: block;
+    }
+    .login-btn:hover  { filter: brightness(1.12) saturate(1.1); }
+    .login-btn:active { filter: brightness(.85); }
+    .arch-glow {
+      position: fixed; border-radius: 50%; pointer-events: none; z-index: 200;
+      background: radial-gradient(circle,
+        #fff 0%, rgba(255,255,255,.98) 10%,
+        rgba(220,100,255,.95) 25%, rgba(0,220,255,.85) 50%,
+        rgba(255,60,200,.50) 72%, transparent 100%);
+      filter: blur(8px); opacity: 0;
+    }
+    .white-flash { position: fixed; inset: 0; background: #fff; z-index: 300; opacity: 0; pointer-events: none; }
+
+    /* ══ DESKTOP ══ */
+    .desktop-page {
+      position: fixed; inset: 0;
+      background: url('./desktop_layout%20enter.webp') center / cover no-repeat;
+      touch-action: none;
+    }
+    .desktoporastort {
+      position: fixed; inset: 0;
+      background: url('./desktop_layout%20enter.webp') center / cover no-repeat;
+      filter: url(#crystalDisplace); z-index: 2; opacity: 0; pointer-events: none;
+      transition: opacity .55s ease;
+      -webkit-mask-image: radial-gradient(circle 160px at var(--cx,50%) var(--cy,50%), white 0%, white 30%, rgba(255,255,255,.5) 60%, transparent 100%);
+      mask-image: radial-gradient(circle 160px at var(--cx,50%) var(--cy,50%), white 0%, white 30%, rgba(255,255,255,.5) 60%, transparent 100%);
+    }
+
+    /* ══ CARTELLE DESKTOP ══ */
+    .folder-btn {
+      position: fixed; display: flex; flex-direction: column; align-items: center; gap: 4px;
+      cursor: pointer; z-index: 10; background: transparent; border: none;
+      padding: 4px; border-radius: 4px; transition: background .15s;
+      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    }
+    .folder-btn:hover  { background: rgba(255,255,255,.15); }
+    .folder-btn:active { background: rgba(255,255,255,.25); }
+    .folder-label {
+      color: #FFF; font-family: "fayte-pixel-hard", monospace;
+      text-align: center; white-space: nowrap;
+    }
+
+    /* ══ TASKBAR ══ */
+    .taskbar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 15; pointer-events: none; }
+    .taskbar svg.taskbar-bg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .start-btn {
+      position: absolute; left: 0; top: 0;
+      background: linear-gradient(180deg, #FFF 0%, #FFF600 42.79%, #B9B303 99.52%);
+      box-shadow: 0 4px 12.5px 2px #000;
+      pointer-events: all; cursor: pointer; z-index: 2; border: none;
+    }
+    .nav-btn {
+      position: absolute; top: 0;
+      background: rgba(0,0,0,.18); border: none; border-right: 1px solid rgba(0,0,0,.28);
+      color: #FFF; font-family: "fayte-pixel-hard", monospace;
+      cursor: pointer; pointer-events: all; z-index: 2;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      transition: background .15s; touch-action: manipulation;
+    }
+    .nav-btn:hover, .nav-btn:active { background: rgba(255,255,255,.22); }
+    .min-win-btn { display: flex; align-items: center; gap: 4px; padding: 0 6px; }
+    .min-win-icon { height: 60%; width: auto; image-rendering: pixelated; flex-shrink: 0; }
+    .clock-live {
+      position: absolute; right: 0; top: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      color: #FFF; font-family: 'Lato', sans-serif;
+      text-align: center; pointer-events: none; z-index: 2; line-height: 1.2;
+    }
+
+    /* ══ FINESTRA SEZIONE ══ */
+    .section-overlay {
+      position: fixed; inset: 0; background: transparent;
+      z-index: 50; display: flex; align-items: center; justify-content: center;
+    }
+    * { cursor: none !important; }
+    #cur {
+      position: fixed; top: 0; left: 0;
+      width: 14px; height: 14px;
+      border: 2px solid #CC44FF;
+      border-radius: 50%;
+      will-change: transform;
+      pointer-events: none; z-index: 9999;
+      background: transparent;
+      transition: width .2s ease, height .2s ease, background .2s ease, border-color .2s ease;
+    }
+    #cur.cur-big {
+      width: 44px; height: 44px;
+      border-color: #FF88DD;
+      background: rgba(204,68,255,.12);
+    }
+    .section-window {
+      background:
+        linear-gradient(transparent, transparent) padding-box,
+        linear-gradient(135deg, #FF99CC 0%, #DD55FF 35%, #9922BB 70%, #FF88DD 100%) border-box;
+      border: 8px solid transparent;
+      display: flex; flex-direction: column; overflow: hidden;
+      max-width: 100vw; max-height: 100dvh;
+      position: relative;
+    }
+    .proj-panel {
+      position: absolute; z-index: 20;
+      width: min(680px, 90%); height: min(800px, 88%);
+      background:
+        linear-gradient(#E4E4E4,#E4E4E4) padding-box,
+        linear-gradient(135deg,#FF99CC 0%,#DD55FF 35%,#9922BB 70%,#FF88DD 100%) border-box;
+      border: 6px solid transparent;
+      display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: 6px 6px 28px rgba(0,0,0,.75);
+      transition: left .22s ease, top .22s ease, width .22s ease, height .22s ease;
+    }
+    .proj-panel-bar {
+      background: linear-gradient(90deg,#9922CC 0%,#CC44FF 30%,#FF88DD 55%,#CC44FF 75%,#9922CC 100%);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 6px; flex-shrink: 0; height: 26px;
+      cursor: move; user-select: none;
+    }
+    .proj-panel-bar span { color:#FFF; font-family:"fayte-pixel-hard",monospace; font-size:22px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; }
+    .proj-panel-bar .pp-win-btns { display:flex; align-items:center; gap:3px; flex-shrink:0; }
+    .proj-panel-bar .pp-btn { background:#E8C200; border:1px solid; border-color:#FFEE55 #998800 #998800 #FFEE55; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#553300; font-family:'Lato',sans-serif; font-weight:700; line-height:1; padding:0; flex-shrink:0; width:18px; height:18px; font-size:12px; transition:background .1s; }
+    .proj-panel-bar .pp-btn:hover { background:#FFD700; }
+    .proj-panel-bar .pp-btn-close:hover { background:#FF3333; color:#FFF; border-color:#FF9999 #CC0000 #CC0000 #FF9999; }
+    .section-titlebar {
+      background: linear-gradient(90deg, #9922CC 0%, #CC44FF 30%, #FF88DD 55%, #CC44FF 75%, #9922CC 100%);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 6px; flex-shrink: 0;
+    }
+    .section-titlebar h2 {
+      color: #FFF; font-family: "fayte-pixel-hard", monospace;
+      text-shadow: 1px 1px 0 #660099;
+      display: flex; align-items: center; gap: 8px;
+      flex: 1; min-width: 0; overflow: hidden;
+    }
+    .title-text {
+      flex: 1; min-width: 0;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .win-btns { display: flex; align-items: center; gap: 3px; }
+    .win-btn {
+      background: #E8C200; border: 1px solid;
+      border-color: #FFEE55 #998800 #998800 #FFEE55;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: #553300; font-family: 'Lato', sans-serif;
+      line-height: 1; padding: 0; flex-shrink: 0; transition: background .1s;
+    }
+    .win-btn:hover { background: #FFD700; }
+    .win-btn-close:hover { background: #FF3333; color: #FFF; border-color: #FF9999 #CC0000 #CC0000 #FF9999; }
+
+    /* ── Bottone indietro ── */
+    .back-btn {
+      background: rgba(150,0,220,.5); border: 1px solid #FF88DD;
+      color: #FFF; font-family: "fayte-pixel-hard", monospace;
+      font-size: clamp(10px,1.2vw,14px);
+      cursor: pointer; padding: 2px 7px; line-height: 1; flex-shrink: 0;
+      transition: background .12s;
+    }
+    .back-btn:hover { background: rgba(200,0,255,.8); }
+
+    /* ── Griglia icone ── */
+    .section-body {
+      flex: 1; overflow-y: auto; overflow-x: hidden;
+      padding: 16px;
+      background-image: url('./pixel art.webp');
+      background-position: center top;
+      background-size: cover;
+      background-repeat: no-repeat;
+      image-rendering: pixelated;
+      display: flex; flex-direction: column;
+      align-items: flex-start; gap: 10px;
+      position: relative;
+    }
+    .section-body::-webkit-scrollbar { width: 14px; }
+    .section-body::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-left: 1px solid #9999AA; }
+    .section-body::-webkit-scrollbar-thumb { background: #B0AABB; border: 1px solid; border-color: #FFF #808099 #808099 #FFF; }
+
+    .app-icon {
+      position: relative;
+      background: transparent; border: none; cursor: pointer;
+      padding: 0; display: inline-block;
+      transition: transform .15s, filter .15s;
+      touch-action: manipulation;
+    }
+    .app-icon:nth-child(even) { align-self: flex-end; }
+    .app-icon:hover  { transform: scale(1.07); filter: drop-shadow(0 0 16px rgba(200,0,255,.9)); }
+    .app-icon:active { transform: scale(0.97); }
+    .app-icon img {
+      position: relative; z-index: 2;
+      width: clamp(160px, 28vw, 360px);
+      height: auto; image-rendering: pixelated; display: block;
+    }
+    .app-icon-label { position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%); z-index: 3; }
+
+
+    .app-icon-label {
+      position: absolute; top: 50%; left: 0; right: 0;
+      transform: translateY(-50%);
+      color: #FFF; font-family: "fayte-pixel-hard", monospace;
+      font-size: clamp(26px, 3vw, 34px); text-align: center;
+      padding: 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      pointer-events: none;
+    }
+    
+
+    /* ── Carosello ── */
+    .sec-carousel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .car-wrap {
+      flex: 1; min-height: 0; position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      background: #E4E4E4;
+    }
+    .car-img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+    .car-prev { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); z-index: 3; }
+    .car-next { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); z-index: 3; }
+    .car-nav {
+      background: rgba(60,0,120,.70); border: 2px solid #FF88DD;
+      color: #FFF; font-size: clamp(20px,3vw,38px);
+      cursor: pointer; padding: 6px 12px; z-index: 3; line-height: 1;
+      transition: background .12s; backdrop-filter: blur(4px);
+    }
+    .car-nav:hover { background: rgba(180,0,255,.90); }
+    .car-counter {
+      position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 3;
+      background: rgba(40,0,80,.80); color: #FF88DD;
+      font-family: "fayte-pixel-hard", monospace; font-size: clamp(13px,1.4vw,17px);
+      padding: 3px 10px; pointer-events: none; backdrop-filter: blur(4px);
+    }
+    .car-desc {
+      flex-shrink: 0; max-height: 52%; overflow-y: auto;
+      padding: 52px 72px 56px; margin: 0;
+      background: url('./box%20testo.webp') center / 100% 100% no-repeat;
+      image-rendering: pixelated;
+      color: #111;
+      font-family: 'Lato', sans-serif;
+      font-size: clamp(11px,1.1vw,13px); line-height: 1;
+      border-top: 2px solid #CC44FF;
+      position: relative;
+    }
+    .car-desc-name {
+      display: block; margin-bottom: 10px;
+      color: #7700AA; font-family: "fayte-pixel-hard", monospace;
+      font-size: clamp(14px,1.6vw,19px); letter-spacing: 3px;
+    }
+    .car-desc::after {
+      content: '▼'; position: absolute; bottom: 55px; right: 74px; z-index: 5;
+      color: #FF88FF; font-size: clamp(8px,1vw,11px);
+      animation: blink .9s step-end infinite; pointer-events: none;
+    }
+    @keyframes blink { 0%,100%{ opacity:1 } 50%{ opacity:0 } }
+
+    /* ── Pannello flottante (About, Contact) ── */
+    .panel-overlay {
+      background: url('./desktop_layout%20enter.webp') center / cover no-repeat !important;
+      pointer-events: none;
+      align-items: flex-start !important;
+      justify-content: flex-start !important;
+    }
+    .panel-overlay .section-window {
+      pointer-events: all;
+      position: fixed !important;
+    }
+    .panel-body {
+      background: #C8C4BC;
+      padding: 18px 20px 22px;
+      overflow-y: auto;
+      max-height: 78vh;
+    }
+    .panel-titlebar-drag { cursor: move; }
+    /* ── Animazioni character select ── */
+    @keyframes csPanelIn {
+      0%   { opacity:0; transform:scaleY(0.04) scaleX(0.6) }
+      40%  { opacity:1; transform:scaleY(1.04) scaleX(1)   }
+      100% { transform:scaleY(1) scaleX(1)                 }
+    }
+    @keyframes csFadeUp {
+      from { opacity:0; transform:translateY(10px) }
+      to   { opacity:1; transform:translateY(0)    }
+    }
+    @keyframes csCharIn {
+      0%   { opacity:0; transform:scale(2.2); filter:blur(28px) brightness(3) }
+      55%  { opacity:1; filter:blur(5px) brightness(1.6)                       }
+      100% { transform:scale(1); filter:blur(0) brightness(1)                  }
+    }
+    @keyframes csGlitch {
+      0%,82%,100% { transform:skewX(0);       color:#FF88DD }
+      83%         { transform:skewX(-7deg);    color:#00FFEE }
+      85%         { transform:skewX(7deg);     color:#FF0099 }
+      87%         { transform:skewX(-3deg);    color:#FF88DD }
+      89%         { transform:skewX(0)                      }
+    }
+    @keyframes csStat80 { from{width:0} to{width:80%} }
+    @keyframes csStat70 { from{width:0} to{width:70%} }
+    @keyframes csStat90 { from{width:0} to{width:90%} }
+    @keyframes csBarGlow { 0%,100%{box-shadow:0 0 6px rgba(255,136,221,.5)} 50%{box-shadow:0 0 14px rgba(255,136,221,.9)} }
+
+
+    /* ── Pannello flottante nel desktop ── */
+    .float-panel {
+      position: fixed; z-index: 20;
+      background:
+        linear-gradient(#E4E4E4,#E4E4E4) padding-box,
+        linear-gradient(135deg,#FF99CC 0%,#DD55FF 35%,#9922BB 70%,#FF88DD 100%) border-box;
+      border: 8px solid transparent;
+      display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: 4px 4px 20px rgba(0,0,0,.65);
+      animation: csPanelIn 0.35s steps(7) both;
+      transform-origin: top center;
+    }
+    .float-panel-bar { cursor: move; user-select: none; }
+    .static-content {
+      color: #3A0055; font-family: 'Lato', sans-serif;
+      font-size: clamp(13px,1.5vw,15px); line-height: 2;
+    }
+    .static-content .label {
+      font-family: "fayte-pixel-hard", monospace;
+      font-size: clamp(30px,4vw,46px); color: #7700AA; display: block; margin-bottom: 28px;
+    }
+
+    /* ══ LATO UTILITY ══ */
+    .lato-thin         { font-family:"Lato",sans-serif; font-weight:100; font-style:normal; }
+    .lato-light        { font-family:"Lato",sans-serif; font-weight:300; font-style:normal; }
+    .lato-regular      { font-family:"Lato",sans-serif; font-weight:400; font-style:normal; }
+    .lato-bold         { font-family:"Lato",sans-serif; font-weight:700; font-style:normal; }
+    .lato-black        { font-family:"Lato",sans-serif; font-weight:900; font-style:normal; }
+    .lato-thin-italic  { font-family:"Lato",sans-serif; font-weight:100; font-style:italic; }
+    .lato-light-italic { font-family:"Lato",sans-serif; font-weight:300; font-style:italic; }
+    .lato-regular-italic{ font-family:"Lato",sans-serif; font-weight:400; font-style:italic; }
+    .lato-bold-italic  { font-family:"Lato",sans-serif; font-weight:700; font-style:italic; }
+    .lato-black-italic { font-family:"Lato",sans-serif; font-weight:900; font-style:italic; }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 1023px) {
+      .section-body {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px; padding: 14px;
+        align-items: start;
+      }
+      .app-icon { width: 100%; display: block; }
+      .app-icon:nth-child(even) { align-self: auto; }
+      .app-icon img { width: 100%; height: auto; }
+      .app-icon-label { font-size: clamp(22px, 2.8vw, 30px); }
+      .section-titlebar h2 { overflow: hidden; min-width: 0; }
+      .section-titlebar h2 span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    }
+    @media (max-width: 600px) {
+      .section-body { gap: 10px; padding: 10px; }
+      .app-icon-label { font-size: clamp(22px, 4.5vw, 30px); }
+      .car-nav { padding: 4px 8px; font-size: clamp(18px, 6vw, 32px); }
+      .car-desc { padding: 10px 12px 16px; font-size: clamp(10px, 2.8vw, 13px); max-height: 45%; }
+      .car-desc-name { font-size: clamp(13px, 3vw, 17px); }
+      .proj-panel { width: 96% !important; height: 90% !important; }
+      .proj-panel-bar span { font-size: 12px; }
+      .car-counter { font-size: clamp(11px, 2.5vw, 14px); }
+    }
+    @media (max-width: 1023px) and (orientation: landscape) and (max-height: 540px) {
+      .proj-panel { width: 92% !important; height: 95% !important; }
+      .car-desc { max-height: 35%; }
+    }
+
+    /* ══ OVERLAY "RUOTA" — portrait su mobile ══ */
+    @keyframes rotatePhone {
+      0%,100% { transform: rotate(0deg);   }
+      30%,70% { transform: rotate(-90deg); }
+    }
+    .rotate-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 99999;
+      background: #0a0020;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 22px; text-align: center; padding: 32px;
+    }
+    .rotate-overlay .rot-icon {
+      font-size: 58px; line-height: 1; display: block;
+      animation: rotatePhone 2.8s ease-in-out infinite;
+    }
+    .rotate-overlay .rot-title {
+      font-family: "fayte-pixel-hard", monospace;
+      color: #FF88FF; font-size: clamp(10px, 4vw, 15px);
+      text-shadow: 0 0 10px #FF00EE; margin: 0;
+    }
+    .rotate-overlay .rot-sub {
+      font-family: 'Lato', sans-serif;
+      color: #CC88FF; font-size: clamp(12px, 3.5vw, 15px); margin: 0;
+    }
+    @media (orientation: portrait) and (max-width: 1023px) {
+      .rotate-overlay { display: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Mostrato solo in portrait su mobile: il sito è landscape-first -->
+  <div class="rotate-overlay">
+    <span class="rot-icon">📱</span>
+    <p class="rot-title">RUOTA IL DISPOSITIVO</p>
+    <p class="rot-sub">Questo sito è ottimizzato per la visualizzazione orizzontale</p>
+  </div>
+
+  <div id="app"><router-view></router-view></div>
+
+  <script>
+    const { createApp } = Vue
+    const { createRouter, createWebHashHistory } = VueRouter
+    let _loggedIn = false
+    const _minimized = Vue.reactive([])
+
+    function cc(DW, DH, x, y, w, h) {
+      const vw = window.innerWidth, vh = window.innerHeight
+      const s  = Math.max(vw / DW, vh / DH)
+      return { left: (vw - DW*s)/2 + x*s, top: (vh - DH*s)/2 + y*s, width: w*s, height: h*s, s }
+    }
+
+    /* ══ LOGIN ══ */
+    const LoginPage = {
+      name: 'LoginPage',
+      template: `
+        <div class="login-page" ref="page">
+          <div class="login-center" ref="lc">
+            <div class="avatar-wrap" ref="av"><img src="./pixel.webp" alt="avatar"/></div>
+            <button class="login-btn" ref="btn" @click="go">LOGIN</button>
+          </div>
+          <div class="arch-glow" ref="glow"></div>
+          <div class="white-flash" ref="flash"></div>
+        </div>
+      `,
+      methods: {
+        go() {
+          const { page, av, btn, glow, flash } = this.$refs
+          gsap.killTweensOf([btn, av])
+          const arch = cc(1440,1024,720,265,0,0)
+          const glowD = Math.max(window.innerWidth, window.innerHeight) * 4
+          gsap.set(glow, { width:glowD, height:glowD, left:arch.left, top:arch.top, xPercent:-50, yPercent:-50, scale:0, opacity:0 })
+          gsap.set(flash, { opacity:0 })
+          const tl = gsap.timeline()
+          tl.to([av, btn], { opacity:0, duration:.2 }, 0)
+          tl.to(page, { scale:5, duration:1.6, ease:'power3.in', transformOrigin: arch.left+'px '+arch.top+'px' }, .05)
+          tl.to(glow, { scale:.08, opacity:.7, duration:.25, ease:'power1.out' }, .3)
+          tl.to(glow, { scale:.35, opacity:.9, duration:.35, ease:'power2.out' }, .55)
+          tl.to(glow, { scale:.28, opacity:.85, duration:.12 }, .90)
+          tl.to(glow, { scale:1, opacity:1, filter:'blur(0px)', duration:.45, ease:'power3.in' }, 1.02)
+          tl.to(flash, { opacity:1, duration:.35, ease:'power3.in' }, 1.3)
+          tl.add(() => { _loggedIn = true; this.$router.push('/desktop') }, 1.55)
+        },
+        layout() {
+          const vw = window.innerWidth, vh = window.innerHeight
+          const sm = Math.min(vw, vh)
+          const avSz = Math.round(Math.min(Math.max(70, sm*.17), 140))
+          this.$refs.av.style.cssText = `width:${avSz}px;height:${avSz}px`
+          const btW = Math.round(Math.min(Math.max(200, vw*.36), 420))
+          const btH = Math.round(btW*(92/380))
+          const btFs = Math.max(14, Math.round(btW*.10))
+          Object.assign(this.$refs.btn.style, { width:btW+'px', height:btH+'px', fontSize:btFs+'px', WebkitTextStrokeWidth:Math.max(1,Math.round(btFs*.04))+'px' })
+          const gap = Math.round(Math.min(Math.max(20, vh*.04), 56))
+          const gH = avSz + gap + btH, gW = Math.max(avSz, btW)
+          Object.assign(this.$refs.lc.style, { width:gW+'px', left:Math.round((vw-gW)/2)+'px', top:Math.round((vh-gH)/2)+'px', transform:'none' })
+        }
+      },
+      mounted() {
+        this.layout()
+        window.addEventListener('resize', this.layout)
+        window.addEventListener('orientationchange', this.layout)
+      },
+      unmounted() {
+        window.removeEventListener('resize', this.layout)
+        window.removeEventListener('orientationchange', this.layout)
+      }
+    }
+
+    /* ══ DESKTOP ══ */
+    const DesktopPage = {
+      name: 'DesktopPage',
+      data() {
+        return {
+          time:'00:00', date:'',
+          folders: [
+            { label:'Design',        route:'/design',        dx:30, dy:20,  dw:103, dh:110 },
+            { label:'Fotografia',    route:'/fotografia',    dx:30, dy:140, dw:103, dh:110 },
+            { label:'Illustrazione', route:'/illustrazione', dx:30, dy:260, dw:103, dh:110 },
+            { label:'Logo Design',   route:'/logo',          dx:30, dy:380, dw:103, dh:110 },
+            { label:'3D',            route:'/3d',            dx:30, dy:500, dw:103, dh:110 },
+          ],
+          fStyles:[], tbStyle:{}, sbStyle:{}, navStyles:[{},{}], ckStyle:{}, dtStyle:{},
+          minimized: _minimized, minBtnStyles:[],
+          barH: 36,
+          panels: { about:false, contacts:false },
+          panelPos: { about:{px:0,py:0}, contacts:{px:0,py:0} },
+          panelW: 400,
+          aboutHtml: `<div style="background:#E4E4E4;margin:-18px -20px -22px;padding:20px 18px 28px;font-family:'Lato',sans-serif;color:#111;">
+
+  <span class="label" style="display:block;margin-bottom:20px;animation:csFadeUp .4s steps(6) both;">ABOUT ME</span>
+
+  <div style="text-align:center;border:2px solid #9933CC;padding:8px 12px;margin-bottom:18px;animation:csFadeUp .3s steps(5) .1s both;">
+    <div style="color:#7700AA;font-size:26px;letter-spacing:3px;animation:csGlitch 3.5s steps(1) 1.8s infinite;font-family:"fayte-pixel-hard",monospace;">✦ CHARACTER SELECT ✦</div>
+  </div>
+
+  <div style="text-align:center;margin-bottom:14px;animation:csCharIn .9s steps(16) .25s both;">
+    <div style="display:inline-block;padding:6px;background:#FFF;border:2px solid #9933CC;box-shadow:0 0 0 4px #E4E4E4,0 0 0 6px #CC44FF;">
+      <img src="./carachter%20about%20me%20copia.webp" style="display:block;width:180px;height:180px;object-fit:contain;image-rendering:pixelated;" />
+    </div>
+  </div>
+
+  <div style="text-align:center;font-size:30px;color:#111;letter-spacing:2px;margin-bottom:6px;animation:csFadeUp .3s steps(5) 1.0s both;font-family:"fayte-pixel-hard",monospace;">SERAFINO FILIPPO</div>
+  <div style="text-align:center;font-size:25px;color:#7700AA;margin-bottom:18px;letter-spacing:2px;animation:csFadeUp .3s steps(5) 1.15s both;font-weight:700;">★ PLAYER ONE ★</div>
+
+  <div style="height:1px;background:linear-gradient(90deg,transparent,#9933CC 30%,#CC44FF 50%,#9933CC 70%,transparent);margin-bottom:16px;animation:csFadeUp .2s steps(3) 1.3s both;"></div>
+
+  <div style="font-size:25px;line-height:2.2;margin-bottom:16px;animation:csFadeUp .3s steps(5) 1.4s both;">
+    <div style="display:flex;gap:8px;margin-bottom:4px;"><span style="color:#7700AA;min-width:60px;font-weight:700;">CLASS</span><span style="color:#555;">▸</span><span style="color:#222;">GRAPHIC DESIGNER</span></div>
+    <div style="display:flex;gap:8px;margin-bottom:4px;"><span style="color:#7700AA;min-width:60px;font-weight:700;">LEVEL</span><span style="color:#555;">▸</span><span style="color:#222;">01 Visual Creator</span></div>
+    <div style="display:flex;gap:8px;"><span style="color:#7700AA;min-width:60px;font-weight:700;">SPEC</span><span style="color:#555;">▸</span><span style="color:#222;">Digital / Visual</span></div>
+  </div>
+
+  <div style="height:1px;background:linear-gradient(90deg,transparent,#9933CC 30%,#CC44FF 50%,#9933CC 70%,transparent);margin-bottom:16px;animation:csFadeUp .2s steps(3) 1.65s both;"></div>
+
+  <div style="font-size:25px;color:#7700AA;margin-bottom:10px;letter-spacing:2px;font-weight:700;animation:csFadeUp .3s steps(5) 1.75s both;">[ ABILITIES UNLOCKED ]</div>
+  <div style="font-size:25px;line-height:2.4;margin-bottom:16px;padding-left:4px;animation:csFadeUp .3s steps(5) 1.9s both;">
+    <div style="color:#111;">✦ &nbsp;Graphic Design</div>
+    <div style="color:#111;">✦ &nbsp;Art Direction</div>
+    <div style="color:#111;">✦ &nbsp;3D Modeling</div>
+    <div style="color:#111;">✦ &nbsp;Photography</div>
+    <div style="color:#111;">✦ &nbsp;Illustration</div>
+  </div>
+
+  <div style="height:1px;background:linear-gradient(90deg,transparent,#9933CC 30%,#CC44FF 50%,#9933CC 70%,transparent);margin-bottom:16px;animation:csFadeUp .2s steps(3) 2.1s both;"></div>
+
+  <div style="font-size:25px;color:#7700AA;margin-bottom:12px;letter-spacing:2px;font-weight:700;animation:csFadeUp .3s steps(5) 2.2s both;">[ MAIN STATS ]</div>
+  <div style="font-size:25px;margin-bottom:16px;">
+    <div style="margin-bottom:10px;animation:csFadeUp .3s steps(5) 2.3s both;">
+      <div style="color:#333;margin-bottom:5px;font-weight:600;">CREATIVITY</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="flex:1;height:10px;background:#CCC;border:1px solid #9933CC;">
+          <div style="height:100%;background:linear-gradient(90deg,#7700AA,#CC44FF);animation:csStat80 .7s steps(16) 2.5s both,csBarGlow 1.8s ease 3.3s infinite;"></div>
+        </div>
+        <span style="color:#7700AA;min-width:36px;text-align:right;font-weight:700;">80%</span>
+      </div>
+    </div>
+    <div style="margin-bottom:10px;animation:csFadeUp .3s steps(5) 2.5s both;">
+      <div style="color:#333;margin-bottom:5px;font-weight:600;">VISUAL STORY</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="flex:1;height:10px;background:#CCC;border:1px solid #9933CC;">
+          <div style="height:100%;background:linear-gradient(90deg,#7700AA,#CC44FF);animation:csStat70 .7s steps(14) 2.7s both,csBarGlow 1.8s ease 3.5s infinite;"></div>
+        </div>
+        <span style="color:#7700AA;min-width:36px;text-align:right;font-weight:700;">70%</span>
+      </div>
+    </div>
+    <div style="margin-bottom:6px;animation:csFadeUp .3s steps(5) 2.7s both;">
+      <div style="color:#333;margin-bottom:5px;font-weight:600;">EXPERIMENT</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="flex:1;height:10px;background:#CCC;border:1px solid #9933CC;">
+          <div style="height:100%;background:linear-gradient(90deg,#7700AA,#CC44FF);animation:csStat90 .7s steps(18) 2.9s both,csBarGlow 1.8s ease 3.7s infinite;"></div>
+        </div>
+        <span style="color:#7700AA;min-width:36px;text-align:right;font-weight:700;">90%</span>
+      </div>
+    </div>
+  </div>
+
+
+</div>`,
+          contactsHtml: `<span class="label" style="animation:csFadeUp .4s steps(6) both;">CONTATTI</span>
+<div style="font-family:'Lato',sans-serif;display:flex;flex-direction:column;gap:0;">
+  <div style="padding:20px 0;border-top:1px solid #111;border-bottom:1px solid #111;animation:csFadeUp .35s steps(5) .2s both;">
+    <div style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#9933CC;margin-bottom:8px;">Email</div>
+    <a href="mailto:filipposerafino03@gmail.com" style="font-size:22px;font-weight:400;color:#111;text-decoration:none;letter-spacing:0.5px;">filipposerafino03@gmail.com</a>
+  </div>
+  <div style="padding:20px 0;border-bottom:1px solid #111;animation:csFadeUp .35s steps(5) .4s both;">
+    <div style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#9933CC;margin-bottom:8px;">Instagram</div>
+    <a href="https://www.instagram.com/__.seraaa._/" target="_blank" style="font-size:22px;font-weight:400;color:#111;text-decoration:none;letter-spacing:0.5px;">__.seraaa._</a>
+  </div>
+</div>`
+        }
+      },
+      template: `
+        <div class="desktop-page" ref="page"
+             @mousemove="onMM" @mouseleave="onML"
+             @touchstart="onTS" @touchmove.prevent="onTM" @touchend="onTE">
+          <svg style="position:absolute;width:0;height:0;overflow:hidden">
+            <defs>
+              <filter id="crystalDisplace" x="-20%" y="-20%" width="140%" height="140%">
+                <feTurbulence type="turbulence" baseFrequency="0.03" numOctaves="4" seed="4" result="noise"/>
+                <feGaussianBlur in="noise" stdDeviation="1.8" result="sn"/>
+                <feDisplacementMap in="SourceGraphic" in2="sn" scale="24" xChannelSelector="R" yChannelSelector="G"/>
+              </filter>
+            </defs>
+          </svg>
+          <div class="desktop-distort" ref="distort"></div>
+          <button v-for="(f,i) in folders" :key="f.label" class="folder-btn"
+            :style="fStyles[i]" @click="$router.push(f.route)">
+            <img src="./cartelle.png" :style="{ width:(fStyles[i]&&fStyles[i].iconSz||60)+'px', display:'block', imageRendering:'pixelated' }" />
+            <span class="folder-label" :style="{ fontSize: fStyles[i]&&fStyles[i].fs||'10px' }">{{ f.label }}</span>
+          </button>
+          <div class="taskbar" ref="tb" :style="tbStyle">
+            <svg class="taskbar-bg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 70" preserveAspectRatio="none" fill="none">
+              <path d="M1440 70H0V0H1440V70Z" fill="url(#tbG)"/><path d="M1440 70H0V0H1440V70Z" stroke="black"/>
+              <defs>
+                <linearGradient id="tbG" x1="720" y1="-1.5" x2="720" y2="68.5" gradientUnits="userSpaceOnUse">
+                  <stop offset="0.05" stop-color="#BFF5FF"/><stop offset="0.30" stop-color="#00D8FE"/>
+                  <stop offset="0.67" stop-color="#00CDF2"/><stop offset="1"    stop-color="#009EBA"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <button class="start-btn" :style="sbStyle"></button>
+            <button class="nav-btn" :style="navStyles[0]" @click="showPanel('about')" style="font-family:'fayte-pixel-hard',monospace">About Me</button>
+            <button class="nav-btn" :style="navStyles[1]" @click="showPanel('contacts')" style="font-family:'fayte-pixel-hard',monospace">Contact</button>
+            <button v-for="(m,mi) in minimized" :key="m.route" class="nav-btn min-win-btn" :style="minBtnStyles[mi]" @click="restore(mi)">
+              <img src="./cartelle.png" class="min-win-icon" />{{ m.label }}
+            </button>
+            <div class="clock-live" ref="clk" :style="ckStyle">
+              <span :style="dtStyle">{{ date }}</span>
+              <span>{{ time }}</span>
+            </div>
+          </div>
+          <!-- Pannello About Me -->
+          <div v-if="panels.about" class="float-panel"
+            :style="{width:panelW+'px',left:panelPos.about.px+'px',top:panelPos.about.py+'px'}">
+            <div class="section-titlebar float-panel-bar" :style="{height:barH+'px'}"
+              @mousedown.prevent="panelDrag($event,'about')"
+              @touchstart.prevent="panelDragTouch($event,'about')">
+              <h2 :style="{fontSize:Math.max(8,Math.round(barH*.45))+'px',fontFamily:'&quot;fayte-pixel-hard&quot;,monospace'}"><span class="title-text">📁 About Me</span></h2>
+              <div class="win-btns">
+                <button class="win-btn" :style="pBtnS" @mousedown.stop @click="panels.about=false">−</button>
+                <button class="win-btn" :style="pBtnS" @mousedown.stop>□</button>
+                <button class="win-btn win-btn-close" :style="pBtnS" @mousedown.stop @click.stop="closePanel('about')">×</button>
+              </div>
+            </div>
+            <div class="panel-body"><div class="static-content" v-html="aboutHtml"></div></div>
+          </div>
+          <!-- Pannello Contact -->
+          <div v-if="panels.contacts" class="float-panel"
+            :style="{width:panelW+'px',left:panelPos.contacts.px+'px',top:panelPos.contacts.py+'px'}">
+            <div class="section-titlebar float-panel-bar" :style="{height:barH+'px'}"
+              @mousedown.prevent="panelDrag($event,'contacts')"
+              @touchstart.prevent="panelDragTouch($event,'contacts')">
+              <h2 :style="{fontSize:Math.max(8,Math.round(barH*.45))+'px',fontFamily:'&quot;fayte-pixel-hard&quot;,monospace'}"><span class="title-text">📁 Contact</span></h2>
+              <div class="win-btns">
+                <button class="win-btn" :style="pBtnS" @mousedown.stop @click.stop="closePanel('contacts')">−</button>
+                <button class="win-btn" :style="pBtnS" @mousedown.stop>□</button>
+                <button class="win-btn win-btn-close" :style="pBtnS" @mousedown.stop @click.stop="closePanel('contacts')">×</button>
+              </div>
+            </div>
+            <div class="panel-body"><div class="static-content" v-html="contactsHtml"></div></div>
+          </div>
+        </div>
+      `,
+      created() { this.fStyles = this.folders.map(()=>({})) },
+      computed: {
+        pBtnS() { const s=Math.round(this.barH*.62); return { width:s+'px', height:s+'px', fontSize:Math.max(5,Math.round(this.barH*.25))+'px' } }
+      },
+      watch: {
+        minimized: { handler(){ this.layout() }, deep: true }
+      },
+      methods: {
+        restore(i){ const m = _minimized.splice(i,1)[0]; this.$router.push(m.route) },
+        showPanel(name) {
+          const vw=window.innerWidth, vh=window.innerHeight
+          const w=Math.min(Math.max(320,Math.round(vw*.34)),500)
+          this.panelW=w
+          this.panelPos[name]={ px:Math.round((vw-w)/2), py:Math.round(vh*.18) }
+          this.panels[name]=true
+        },
+        panelDrag(e, name) {
+          const pos=this.panelPos[name], ox=e.clientX-pos.px, oy=e.clientY-pos.py
+          const mv=ev=>{ pos.px=ev.clientX-ox; pos.py=ev.clientY-oy }
+          const up=()=>{ document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up) }
+          document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up)
+        },
+        panelDragTouch(e, name) {
+          const pos=this.panelPos[name], t=e.touches[0], ox=t.clientX-pos.px, oy=t.clientY-pos.py
+          const mv=ev=>{ const t=ev.touches[0]; pos.px=t.clientX-ox; pos.py=t.clientY-oy }
+          const up=()=>{ document.removeEventListener('touchmove',mv); document.removeEventListener('touchend',up) }
+          document.addEventListener('touchmove',mv,{passive:false}); document.addEventListener('touchend',up)
+        },
+        closePanel(name) { this.panels[name] = false },
+        tick() {
+          const d=new Date(), p=n=>String(n).padStart(2,'0')
+          this.time = p(d.getHours())+':'+p(d.getMinutes())
+          this.date = d.getDate()+'/'+p(d.getMonth()+1)+'/'+d.getFullYear()
+        },
+        moveCrystal(x,y) {
+          const d=this.$refs.distort; if(!d) return
+          d.style.setProperty('--cx',x+'px'); d.style.setProperty('--cy',y+'px')
+        },
+        onMM(e) { this._tx=e.clientX; this._ty=e.clientY; if(!this._ca){ this._cx=e.clientX; this._cy=e.clientY; this._ca=true } const d=this.$refs.distort; if(d) d.style.opacity='1' },
+        onML()  { this._ca=false; const d=this.$refs.distort; if(d) d.style.opacity='0' },
+        onTS(e) { const t=e.touches[0]; this._tx=t.clientX; this._ty=t.clientY; this._cx=t.clientX; this._cy=t.clientY; this._ca=true; const d=this.$refs.distort; if(d) d.style.opacity='1' },
+        onTM(e) { e.preventDefault(); const t=e.touches[0]; this._tx=t.clientX; this._ty=t.clientY; if(!this._ca){ this._cx=t.clientX; this._cy=t.clientY; this._ca=true } const d=this.$refs.distort; if(d) d.style.opacity='1' },
+        onTE()  { this._ca=false; const d=this.$refs.distort; if(d) d.style.opacity='0' },
+        layout() {
+          const DW=1440, DH=1000, vw=window.innerWidth, vh=window.innerHeight
+          const mob = vw < 768 || (vw / vh) < 1.2
+          const uiS = Math.min(vw/DW, vh/DH)
+          const tbH = Math.max(mob?34:28, Math.round((mob?52:60)*uiS))
+          const sbW = Math.max(mob?44:40, Math.round((mob?80:100)*uiS))
+          const nvW = mob ? Math.min(Math.floor(vw*.18), 72) : Math.max(58, Math.round(tbH*2.2))
+          const nvFs= Math.max(16, Math.round(tbH*.32))
+          const ckW = Math.max(68, Math.round((mob?90:110)*uiS))
+          const ckFs= Math.max(7, Math.round(tbH*.24))
+          const dtFs= Math.max(6, Math.round(tbH*.20))
+          this.barH = tbH
+          this.tbStyle  = { height:tbH+'px' }
+          this.sbStyle  = { width:sbW+'px', height:tbH+'px' }
+          this.navStyles= [
+            { left:(sbW+2)+'px', top:'0', width:nvW+'px', height:tbH+'px', fontSize:nvFs+'px' },
+            { left:(sbW+2+nvW+2)+'px', top:'0', width:nvW+'px', height:tbH+'px', fontSize:nvFs+'px' }
+          ]
+          this.ckStyle = { width:ckW+'px', height:tbH+'px', fontSize:ckFs+'px' }
+          this.dtStyle = { fontSize:dtFs+'px', opacity:'.78', lineHeight:'1.1', display:'block' }
+          const minStart = sbW + 2 + nvW*2 + 4
+          const minFs  = Math.max(14, Math.round(tbH * .35))
+          const iconW  = Math.round(tbH * .55)
+          let   accLeft = minStart
+          this.minBtnStyles = _minimized.map((m) => {
+            const btnW = Math.round(iconW + m.label.length * minFs * 0.65 + 24)
+            const s = { left:accLeft+'px', top:'0', width:btnW+'px', height:tbH+'px',
+              fontSize:minFs+'px', background:'rgba(80,0,160,.5)', borderBottom:'2px solid #FF88DD' }
+            accLeft += btnW + 2
+            return s
+          })
+          const fp = cc(DW,DH, this.folders[0].dx, this.folders[0].dy, this.folders[0].dw, this.folders[0].dh)
+          const shift = fp.top<140 ? 140-fp.top : 0
+          const perCol = Math.ceil(this.folders.length/2)
+          this.fStyles = this.folders.map((f,i)=>{
+            if(mob){
+              const iW = Math.max(60, Math.min(100, Math.round(vw * 0.20)))
+              const iH = Math.round(iW * 1.15)
+              const iSz = Math.max(30, Math.round(iW * 0.58))
+              const fs = Math.max(22, Math.round(iW * 0.28)) + 'px'
+              return { position:'fixed', left:'10px', top:(8 + i*(iH+8))+'px', width:iW+'px', height:iH+'px', iconSz:iSz, fs }
+            }
+            const col=Math.floor(i/perCol), row=i%perCol
+            const b=cc(DW,DH,this.folders[0].dx,this.folders[0].dy,f.dw,f.dh)
+            const cGap=Math.max(8,Math.round(12*uiS)), rGap=Math.max(6,Math.round(8*uiS))
+            return { left:Math.max(8,b.left+col*(b.width+cGap))+'px', top:(b.top+shift+row*(b.height+rGap))+'px', width:b.width+'px', height:b.height+'px', iconSz:Math.max(24,Math.round(50*uiS)), fs:Math.max(22,Math.round(32*uiS))+'px' }
+          })
+        }
+      },
+      mounted() {
+        this.tick(); this.$iv=setInterval(this.tick,1000)
+        this.layout(); window.addEventListener('resize',this.layout)
+        this._cx=this._cy=this._tx=this._ty=0; this._ca=false;
+        this._tf = ()=>{ if(!this._ca)return; this._cx+=(this._tx-this._cx)*.1; this._cy+=(this._ty-this._cy)*.1; this.moveCrystal(this._cx,this._cy) }
+        gsap.ticker.add(this._tf)
+      },
+      unmounted() {
+        clearInterval(this.$iv); window.removeEventListener('resize',this.layout); gsap.ticker.remove(this._tf)
+      }
+    }
+
+    /* ══ FACTORY SEZIONI PORTFOLIO ══ */
+    function makeSection(title, bodyHtml) {
+      return {
+        name: title.replace(/\s/g,'')+'Page',
+        template: `
+          <div class="section-overlay panel-overlay" ref="ov">
+            <div class="section-window" ref="win"
+              :style="{width:W+'px', left:px+'px', top:py+'px'}">
+              <div class="section-titlebar panel-titlebar-drag" :style="{height:bH+'px'}"
+                @mousedown.prevent="dragStart"
+                @touchstart.prevent="dragStartTouch">
+                <h2 :style="{fontSize:tFs+'px'}"><span class="title-text">📁 ${title}</span></h2>
+                <div class="win-btns">
+                  <button class="win-btn" :style="bS" @mousedown.stop @click="minimize">−</button>
+                  <button class="win-btn" :style="bS" @mousedown.stop>□</button>
+                  <button class="win-btn win-btn-close" :style="bS" @mousedown.stop @click="$router.push('/desktop')">×</button>
+                </div>
+              </div>
+              <div class="panel-body"><div class="static-content">${bodyHtml}</div></div>
+            </div>
+          </div>
+        `,
+        data(){ return { W:400, bH:36, tFs:12, px:0, py:0 } },
+        computed: { bS(){ return { width:Math.round(this.bH*.62)+'px', height:Math.round(this.bH*.62)+'px', fontSize:Math.max(5,Math.round(this.tFs*.5))+'px' } } },
+        methods: {
+          minimize(){ _minimized.push({ label: title, route: this.$route.path }); this.$router.push('/desktop') },
+          dragStart(e) {
+            this._ox = e.clientX - this.px; this._oy = e.clientY - this.py
+            this._onMove = ev => { this.px = ev.clientX - this._ox; this.py = ev.clientY - this._oy }
+            this._onUp   = () => { document.removeEventListener('mousemove', this._onMove); document.removeEventListener('mouseup', this._onUp) }
+            document.addEventListener('mousemove', this._onMove)
+            document.addEventListener('mouseup', this._onUp)
+          },
+          dragStartTouch(e) {
+            const t = e.touches[0]
+            this._ox = t.clientX - this.px; this._oy = t.clientY - this.py
+            this._onTMove = ev => { const t=ev.touches[0]; this.px=t.clientX-this._ox; this.py=t.clientY-this._oy }
+            this._onTEnd  = () => { document.removeEventListener('touchmove', this._onTMove); document.removeEventListener('touchend', this._onTEnd) }
+            document.addEventListener('touchmove', this._onTMove, { passive:false })
+            document.addEventListener('touchend', this._onTEnd)
+          },
+          init() {
+            const vw=window.innerWidth, vh=window.innerHeight, mob=vw<768
+            this.W   = Math.min(Math.max(300, Math.round(vw * 0.32)), 460)
+            this.bH  = Math.max(mob?36:28, Math.round(vw*.033))
+            this.tFs = Math.max(mob?12:11, Math.round(vw*.018))
+            this.px  = Math.round((vw - this.W) / 2)
+            this.py  = Math.round(vh * 0.18)
+          }
+        },
+        mounted(){
+          this.init()
+                  }
+      }
+    }
+
+    function makePortfolio(title, projects) {
+      return {
+        name: title.replace(/\s+/g,'')+'Page',
+        template: `
+          <div class="section-overlay" ref="ov">
+              <div class="section-window" ref="win" :style="{width:W+'px',height:H+'px'}">
+              <div class="section-titlebar" :style="{height:bH+'px'}">
+                <h2 :style="{fontSize:tFs+'px'}">
+                  <span class="title-text">📁 ${title}</span>
+                </h2>
+                <div class="win-btns">
+                  <button class="win-btn" :style="bS" @click="minimize">−</button>
+                  <button class="win-btn" :style="bS">□</button>
+                  <button class="win-btn win-btn-close" :style="bS" @click="$router.push('/desktop')">×</button>
+                </div>
+              </div>
+              <div class="section-body" ref="sectionBody" @scroll="onSectionScroll">
+                <button v-for="(p,i) in projects" :key="i" class="app-icon" @click="open(i)">
+                  <img src="./icone%20app.webp" alt="" />
+                  <span class="app-icon-label">{{ p.title }}</span>
+                </button>
+              </div>
+              <div v-if="active!==null" class="proj-panel"
+                :style="{left:panelX+'px',top:panelY+'px', width:panelW+'px', height:panelH+'px'}" ref="pp">
+                <div class="proj-panel-bar" @mousedown.prevent="startDrag" @touchstart.prevent="startDragTouch">
+                  <span>{{ projects[active].title }}</span>
+                  <div class="pp-win-btns">
+                    <button class="pp-btn" :style="bS">−</button>
+                    <button class="pp-btn" :style="bS">□</button>
+                    <button class="pp-btn pp-btn-close" :style="bS" @click.stop="active=null">×</button>
+                  </div>
+                </div>
+                <div class="sec-carousel">
+                  <div class="car-wrap">
+                    <img :src="curImg" class="car-img" />
+                    <button v-if="projects[active].images.length>1" class="car-nav car-prev" @click="prev">&#8249;</button>
+                    <button v-if="projects[active].images.length>1" class="car-nav car-next" @click="next">&#8250;</button>
+                    <div class="car-counter" v-if="projects[active].images.length>1">{{ idx+1 }} / {{ projects[active].images.length }}</div>
+                  </div>
+                  <div class="car-desc">
+                    <span class="car-desc-name">{{ projects[active].title }}</span><span v-html="projects[active].desc"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+        data(){ return { W:800,H:500,bH:36,tFs:12, active:null, idx:0, projects, panelX:0,panelY:0, panelW:0, panelH:0 } },
+        computed: {
+          bS(){ return { width:Math.round(this.bH*.62)+'px', height:Math.round(this.bH*.62)+'px', fontSize:Math.max(5,Math.round(this.tFs*.5))+'px' } },
+          curImg(){ return this.active!==null ? this.projects[this.active].images[this.idx] : '' }
+        },
+        methods: {
+          open(i){
+            this.active=i; this.idx=0;
+            const vw = this.W; const vh = this.H; const mob = vw < 768;
+            if(mob){
+              this.panelW = Math.round(vw * 0.96);
+              this.panelH = Math.round(vh * 0.92);
+              this.panelX = Math.round(vw * 0.02);
+              this.panelY = Math.round(vh * 0.04);
+            } else {
+              const pw = Math.min(680, Math.round(vw * .90));
+              const ph = Math.min(800, Math.round(vh * .88));
+              this.panelW = pw; this.panelH = ph;
+              this.panelX = Math.round((vw - this.panelW) / 2);
+              this.panelY = Math.round((vh - this.panelH) / 2);
+            }
+          },
+          prev(){ const n=this.projects[this.active].images.length; this.idx=(this.idx-1+n)%n },
+          next(){ const n=this.projects[this.active].images.length; this.idx=(this.idx+1)%n },
+          minimize(){ _minimized.push({ label: title, route: this.$route.path }); this.$router.push('/desktop') },
+          resize(){
+            const vw=window.innerWidth, vh=window.innerHeight, mob=vw<768;
+            this.W = vw; this.H = vh;
+            this.bH = Math.max(mob?36:28, Math.round(vw*.033));
+            this.tFs = Math.max(mob?12:11, Math.round(vw*.018));
+            if(this.active !== null){
+              if(mob){
+                this.panelW = Math.round(this.W * 0.96);
+                this.panelH = Math.round(this.H * 0.92);
+                this.panelX = Math.round(this.W * 0.02);
+                this.panelY = Math.round(this.H * 0.04);
+              } else {
+                this.panelW = Math.min(680, Math.round(this.W * .90));
+                this.panelH = Math.min(800, Math.round(this.H * .88));
+                this.panelX = Math.round((this.W - this.panelW) / 2);
+                this.panelY = Math.round((this.H - this.panelH) / 2);
+              }
+            }
+          },
+          startDrag(e){
+            const sx=e.clientX-this.panelX, sy=e.clientY-this.panelY;
+            const onMove=ev=>{ this.panelX=ev.clientX-sx; this.panelY=ev.clientY-sy };
+            const onUp=()=>{ document.removeEventListener('mousemove',onMove); document.removeEventListener('mouseup',onUp) };
+            document.addEventListener('mousemove',onMove);
+            document.addEventListener('mouseup',onUp);
+          },
+          startDragTouch(e){
+            const t=e.touches[0];
+            const sx=t.clientX-this.panelX, sy=t.clientY-this.panelY;
+            const onMove=ev=>{ const t2=ev.touches[0]; this.panelX=t2.clientX-sx; this.panelY=t2.clientY-sy };
+            const onUp=()=>{ document.removeEventListener('touchmove',onMove); document.removeEventListener('touchend',onUp) };
+            document.addEventListener('touchmove',onMove,{passive:false});
+            document.addEventListener('touchend',onUp);
+          },
+          onSectionScroll(e){},
+        },
+        mounted(){
+          this.resize();
+          window.addEventListener('resize',this.resize);
+                  },
+        unmounted(){ window.removeEventListener('resize',this.resize) }
+      }
+    }
+
+    /* ══ DATI PROGETTI ══ */
+    const _design = [
+      { title:'Di Nuovo',         desc:'Un magazine semestrale che racconta la realtà provinciale attraverso lo sguardo delle nuove generazioni. Il progetto esplora temi come la noia, il senso di immobilità e il desiderio di cambiamento dei giovani che cercano una nuova prospettiva oltre i confini del proprio ambiente.<br><br>Attraverso immagini, impaginazione e linguaggio editoriale ho costruito un racconto visivo che riflette il contrasto tra appartenenza e voglia di evasione.', images:['Design/DI%20NUOVO/MAGAZINE%20INDIPENDENTE.webp'] },
+      { title:'Film',             desc:'Poster promozionale per un gangsta movie che racconta la nascita di una gang formata da persone invisibili agli occhi della società.<br><br>Il concept esplora il tema dell\'esclusione e della rivalsa: individui ignorati che trasformano la propria marginalità in una forza capace di sfidare il mondo. Attraverso atmosfera, composizione e linguaggio cinematografico ho sviluppato l\'identità visiva del film.', images:['Design/Film/Zero.webp','Design/Film/Zero2.webp'] },
+      { title:'Giornale',         desc:'Progetto editoriale dedicato alla creazione di un giornale proibito a distribuzione mensile. Partendo da illustrazioni di riferimento ho sviluppato un linguaggio visivo coerente, costruendo un\'identità grafica attraverso composizione, impaginazione e progettazione di un carattere tipografico originale.<br><br>La creazione dei glifi nasce dall\'analisi delle forme e delle atmosfere del progetto, trasformando il sistema tipografico in un elemento narrativo capace di caratterizzare l\'intera pubblicazione.', images:['Design/Giornale%20-%20Hirki%20no%20himitsu/Giornale%20iosca.webp','Design/Giornale%20-%20Hirki%20no%20himitsu/Giornale%20iosca2.webp','Design/Giornale%20-%20Hirki%20no%20himitsu/Giornale%20iosca3.webp','Design/Giornale%20-%20Hirki%20no%20himitsu/Giornale%20iosca4.webp'] },
+      { title:'Manga',            desc:'Un viaggio visivo nato dall\'interpretazione di una poesia, dove la fuga diventa metafora di crescita e trasformazione personale. La copertina racconta il percorso di un ragazzo intrappolato in un mondo abitato da mostri, alla ricerca di una via d\'uscita verso una realtà sconosciuta.<br><br>Attraverso composizione, texture, immagini e ricerca tipografica ho tradotto le atmosfere del testo in una narrazione visiva sospesa tra sogno e incubo, creando un universo capace di accompagnare il lettore dentro la storia.', images:['Design/Manga/Impaginato%20copertina.webp','Design/Manga/Impaginato%20copertina2.webp','Design/Manga/Impaginato%20copertina3.webp'] },
+      { title:'La Fame',          desc:'Un diario culinario nato come viaggio attraverso sapori, luoghi e tradizioni della provincia di Mantova.<br><br>Il progetto unisce ricerca editoriale e racconto personale, trasformando il cibo in memoria e territorio attraverso immagini, composizione grafica e narrazione visiva.', images:['Design/MOLTOBENE%20LA%20FAME/LA%20FAME%20(1).webp','Design/MOLTOBENE%20LA%20FAME/LA%20FAME2%20(1).webp','Design/MOLTOBENE%20LA%20FAME/LA%20FAME3%20(1).webp','Design/MOLTOBENE%20LA%20FAME/LA%20FAME4.webp','Design/MOLTOBENE%20LA%20FAME/LA%20FAME5.webp','Design/MOLTOBENE%20LA%20FAME/LA%20FAME6.webp'] },
+      { title:'Piazza Loggia',    desc:'Un libro d\'artista sviluppato sotto forma di giornale d\'inchiesta, dedicato alla ricostruzione e all\'approfondimento di un evento storico attraverso documenti e testimonianze raccolte nel corso degli anni.<br><br>Il progetto utilizza il linguaggio giornalistico come strumento di memoria, cercando di creare un dialogo tra informazione, archivio e narrazione visiva.', images:['Design/Piazza%20loggia/Giornale%20definitivo.webp','Design/Piazza%20loggia/Giornale%20definitivo2.webp','Design/Piazza%20loggia/Giornale%20definitivo3.webp','Design/Piazza%20loggia/Giornale%20definitivo4.webp','Design/Piazza%20loggia/Giornale%20definitivo5.webp','Design/Piazza%20loggia/Giornale%20definitivo6.webp','Design/Piazza%20loggia/Giornale%20definitivo7.webp','Design/Piazza%20loggia/Giornale%20definitivo8.webp','Design/Piazza%20loggia/Giornale%20definitivo9.webp'] },
+      { title:'POMO', desc:'Design per il disco di piccola orchestra materana al festival di matera, ci siamo ispirati dal trullo pietra materana e il concetto della sera per matera.', images:['Design/POMO/definitivo.webp','Design/POMO/Booklet%20copia.webp','Design/POMO/Booklet2.png','Design/POMO/Booklet3.png','Design/POMO/Booklet4%20copia.webp','Design/POMO/GIUSTO%20Piccola%20Orchestra%20Materana%20Onyx%20_%20Digipack%202%20ante%20(7mm)%20con%20tasca%20chiusa%20su%20tre%20lati%203.webp','Design/POMO/Inlay%20Card%20esterna%20_interna%20copia-03.webp','Design/POMO/Inlay%20Card%20esterna%20_interna%20copia-04.webp','Design/POMO/Label%20CD-DVD-1%20copia.webp'] },
+      { title:'ACD', desc:'Un brand di LSD dove offre una possibilità di viaggiare stando comodi dal divano.', images:['Design/ACD/ACD%20LOGO.png','Design/ACD/Compositing%201%20copia.webp','Design/ACD/Compositing%202%20copia.webp','Design/ACD/Compositing%203.webp','Design/ACD/Compositing%204%20copia.webp','Design/ACD/cookie%20pack%202.png','Design/ACD/dcanary%20pack.png','Design/ACD/eagle%20pck%20mockup%203.png','Design/ACD/fdragon%20pack%20mockup%203.png','Design/ACD/Post%201.jpg','Design/ACD/Post%202.jpg','Design/ACD/Post%203.jpg','Design/ACD/Post%204.jpg','Design/ACD/sticker%201.png','Design/ACD/sticker%202.png','Design/ACD/sticker%203.png','Design/ACD/sticker%204.png','Design/ACD/sticker%205.png','Design/ACD/SUPPORT%20YOUR%20LOCAL%20%20DEALER.png'] }
+    ]
+    const _foto = [
+      { title:'Bloomin',          desc:'Serie fotografica realizzata durante un festival scolastico in collaborazione con il conservatorio, raccontando attraverso immagini momenti di performance, espressione artistica e condivisione.', images:['Fotografia/Bloomin/IMG_1609.webp','Fotografia/Bloomin/IMG_1636.webp','Fotografia/Bloomin/IMG_1780.JPG','Fotografia/Bloomin/IMG_1817.webp','Fotografia/Bloomin/IMG_1851.webp','Fotografia/Bloomin/IMG_1938.webp','Fotografia/Bloomin/IMG_9949.webp'] },
+      { title:'Compositing',      desc:'Vari compositing realizzati durante gli anni.',   images:['Fotografia/Compositing/COMPOSITING%20CONO.webp','Fotografia/Compositing/COMPOSTING%20KANYE.webp','Fotografia/Compositing/Conchiglia.webp','Fotografia/Compositing/Thriller%20bark.jpg'] },
+      { title:'Natura',           desc:'Studio visivo dedicato alla rappresentazione di un\'orchidea immersa in un ambiente naturale sospeso.<br><br>Attraverso luce, composizione e atmosfera ho esplorato il rapporto tra elemento organico e ambiente, creando un\'immagine tra realtà e immaginazione.', images:['Fotografia/Natura/IMG_1680.webp','Fotografia/Natura/IMG_1733.webp'] },
+      { title:'Nayt',             desc:'Composizione fotografica realizzata durante un concerto dell\'artista, con l\'obiettivo di catturare energia, atmosfera e rapporto tra performer e pubblico.', images:['Fotografia/Nayt/IMG_0993-Migliorato-NR-2.webp','Fotografia/Nayt/IMG_1149-Migliorato-NR.webp','Fotografia/Nayt/IMG_1211-Migliorato-NR.webp','Fotografia/Nayt/IMG_1213-Migliorato-NR.webp','Fotografia/Nayt/IMG_1245-Migliorato-NR.webp','Fotografia/Nayt/IMG_1285-Migliorato-NR.webp'] },
+      { title:'Ritratto',         desc:'Sono dei ritratti realizzati per dare vari aspetti alla persona sia immersa nella natura ma anche davanti allo specchio dinanzi a un vuoto rosso.',                        images:['Fotografia/Ritratto/Ritratto%201.webp','Fotografia/Ritratto/ritratto%202.webp','Fotografia/Ritratto/rittratto%204.webp'] },
+      { title:'Still Life',       desc:'Una composizione che mette in dialogo diverse generazioni tecnologiche, unendo videogiochi, oggetti analogici del passato e elementi naturali.<br><br>Il progetto esplora il rapporto tra nostalgia, evoluzione tecnologica e memoria personale attraverso una scena still life contemporanea.', images:['Fotografia/Still%20life%20nintendo/IMG_2351.webp','Fotografia/Still%20life%20nintendo/IMG_2457.webp','Fotografia/Still%20life%20nintendo/IMG_2485.webp','Fotografia/Still%20life%20nintendo/IMG_2513.webp'] }
+    ]
+    const _ill = [
+      { title:'Musica',           desc:'Illustrazioni a tema musicale.',                 images:['illustrazione/Musica/angeli%20tony%20boy.webp','illustrazione/Musica/Cigni%20vinile%204.webp','illustrazione/Musica/Ele%20a.webp','illustrazione/Musica/moon%20girl.webp'] },
+      { title:'Vinile',           desc:'Progettazione di un vinile 45 giri accompagnato da un sistema di cartoline fisiche che ampliano l\'universo visivo dell\'artista.<br><br>Il progetto interpreta il percorso emotivo presente nella musica, dalla malinconia iniziale fino alla redenzione personale, trasformando il supporto fisico in un\'esperienza narrativa fatta di immagini e ricordi.', images:['illustrazione/Vinile/copertina%20fotografica.webp','illustrazione/Vinile/Crazy.webp','illustrazione/Vinile/Fenice.webp','illustrazione/Vinile/Grind.webp'] }
+    ]
+    const _logo = [
+      { title:'Bulletin Atomic',  desc:'Sviluppo di una brand identity ispirata all\'Orologio dell\'Apocalisse e alla possibilità di un futuro segnato dal progresso incontrollato dell\'intelligenza artificiale.<br><br>Il progetto esplora il rapporto tra tecnologia, rischio e futuro attraverso un sistema visivo che comunica tensione, innovazione e inquietudine.', images:['Logo/doomsday%20clock-28.webp','Logo/doomsday%20clock-29.webp','Logo/doomsday%20clock-30.webp','Logo/doomsday%20clock-31.webp','Logo/doomsday%20clock-32.webp','Logo/Serafino_Filippo-28.webp','Logo/Serafino_Filippo-29.webp'] },
+      { title:'Dinuovo',          desc:'Un magazine semestrale che racconta la realtà provinciale attraverso lo sguardo delle nuove generazioni. Il progetto esplora temi come la noia, il senso di immobilità e il desiderio di cambiamento dei giovani che cercano una nuova prospettiva oltre i confini del proprio ambiente.<br><br>Attraverso immagini, impaginazione e linguaggio editoriale ho costruito un racconto visivo che riflette il contrasto tra appartenenza e voglia di evasione.', images:['Logo/DINUOVO.webp'] },
+      { title:'Hindsight',        desc:'Progetto logo Hindsight.',                       images:['Logo/Hindsight%20logo/No%20space.webp','Logo/Hindsight%20logo/No%20space.png'] },
+      { title:'Redemption Art',   desc:'Logo per una casa cinematografica di ex galeotti che vogliono creare dei film.',                  images:['Logo/Logo%20cinema.webp'] }
+    ]
+    const _3d = [
+      { title:'Anime',            desc:'Creazione di una scultura digitale ispirata all\'estetica anime e chibi.<br><br>Il progetto nasce dalla ricerca di un personaggio capace di unire forme morbide, design espressivo e linguaggi visivi tipici dell\'animazione giapponese.', images:['3d/Anime%201.webp','3d/Anime%202.webp','3d/anime%203.webp','3d/anime%204.webp','3d/Anime%205.webp'] },
+      { title:'Arte',             desc:'Progettazione di uno spazio espositivo tridimensionale in cui un personaggio interagisce con l\'ambiente artistico.<br><br>Ispirato alla ricerca sulla torsione e sulla percezione dello spazio, il progetto esplora il rapporto tra osservatore, opera e ambiente attraverso elementi scultorei e compositivi.', images:['3d/Arte%201.webp','3d/Arte%202.webp','3d/Arte%203.webp','3d/Arte%204.webp','3d/Arte%205.webp'] },
+      { title:'Highest in the Room',           desc:'Partendo dall\'ispirazione di una cover musicale di Highest in the Room, ho sviluppato una composizione tridimensionale che immagina una scala sospesa sopra le nuvole.<br><br>Attraverso modellazione, materiali e rendering con Redshift ho costruito un ambiente surreale che esplora il concetto di elevazione e fuga dalla realtà.', images:['3d/Clouds.jpg'] },
+      { title:'Luna',             desc:'Composizione surreale basata sulla frattura di Voronoi applicata alla superficie lunare.<br><br>La rottura della luna diventa una metafora visiva di cambiamento e trasformazione, creando un\'immagine sospesa tra realtà scientifica e immaginazione.', images:['3d/luna%201.webp','3d/Luna%202.webp','3d/Luna%205.webp','3d/Luna%206.webp'] }
+    ]
+
+    /* ══ PAGINE ══ */
+    const DesignPage        = makePortfolio('Design',        _design)
+    const FotografiaPage    = makePortfolio('Fotografia',    _foto)
+    const IllustrazionePage = makePortfolio('Illustrazione', _ill)
+    const LogoPage          = makePortfolio('Logo Design',   _logo)
+    const TDPage            = makePortfolio('3D',            _3d)
+
+    const AboutPage = makeSection('About Me', `
+      <span class="label">SERAFINO FILIPPO</span>
+      <p>Studente di Web Design. Appassionato di grafica, fotografia e arte digitale.</p>
+      <br/>
+      <p>Aggiungi qui la tua descrizione, le tue competenze e i tuoi obiettivi futuri.</p>
+    `)
+    const ContactsPage = makeSection('Contact', `
+      <span class="label">CONTATTI</span>
+      <div style="font-family:'fayte-pixel-hard',monospace;font-size:25px;line-height:2.8">📧&nbsp;<a href="mailto:filipposerafino03@gmail.com" style="color:#7700AA;text-decoration:underline">filipposerafino03@gmail.com</a></div>
+      <div style="font-family:'fayte-pixel-hard',monospace;font-size:25px;line-height:2.8">📷&nbsp;<span style="color:#7700AA">@serafino_filippo</span></div>
+    `)
+
+    /* ══ ROUTER ══ */
+    const router = createRouter({
+      history: createWebHashHistory(),
+      routes: [
+        { path:'/',              component: LoginPage         },
+        { path:'/desktop',       component: DesktopPage       },
+        { path:'/design',        component: DesignPage        },
+        { path:'/fotografia',    component: FotografiaPage    },
+        { path:'/illustrazione', component: IllustrazionePage },
+        { path:'/logo',          component: LogoPage          },
+        { path:'/3d',            component: TDPage            },
+        { path:'/about',         component: AboutPage         },
+        { path:'/contacts',      component: ContactsPage      },
+      ]
+    })
+    router.beforeEach(to => {
+      if(to.path !== '/' && !_loggedIn) return '/'
+      const idx = _minimized.findIndex(m => m.route === to.path)
+      if(idx !== -1) _minimized.splice(idx, 1)
+    })
+    createApp({}).use(router).mount('#app')
+  </script>
+  <div id="cur"></div>
+  <script>
+    (function(){
+      const cur = document.getElementById('cur');
+      const SEL = 'button, a, .folder-btn, .app-icon, .car-nav, .nav-btn';
+      let tx = -100, ty = -100, cx = -100, cy = -100, hw = 7, hh = 7, last = 0;
+      cur.addEventListener('transitionend', () => { hw = cur.offsetWidth / 2; hh = cur.offsetHeight / 2; });
+      document.addEventListener('mousemove', e => {
+        tx = e.clientX; ty = e.clientY;
+        e.target.closest(SEL) ? cur.classList.add('cur-big') : cur.classList.remove('cur-big');
+      });
+      document.addEventListener('scroll', () => { cx = tx; cy = ty; last = 0; }, true);
+      function loop(t) {
+        const dt = last ? Math.min((t - last) / 16.67, 2) : 1;
+        last = t;
+        const f = 1 - Math.pow(0.80, dt);
+        cx += (tx - cx) * f;
+        cy += (ty - cy) * f;
+        cur.style.transform = 'translate(' + (cx - hw) + 'px,' + (cy - hh) + 'px)';
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+    })();
+  </script>
+</body>
+</html>
